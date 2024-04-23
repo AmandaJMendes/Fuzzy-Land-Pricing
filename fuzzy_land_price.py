@@ -28,7 +28,7 @@ dist_to_beach['far']     = fuzz.trimf(dist_to_beach.universe, [800, 5000, 5000])
 
 price['very low']  = fuzz.trimf(price.universe, [20 , 20    , 80])
 price['low']       = fuzz.trimf(price.universe, [50 , 100 , 150])
-price['average']   = fuzz.trimf(price.universe, [100, 200, 300])
+price['average']   = fuzz.trimf(price.universe, [100, 250, 400])
 price['high']      = fuzz.trimf(price.universe, [200, 600, 1000])
 price['very high'] = fuzz.trimf(price.universe, [800, 4000, 4000])
 #price.view()
@@ -46,15 +46,14 @@ rules.append(ctrl.Rule(area['average'] & dist_to_av['far'] & dist_to_beach['far'
 rules.append(ctrl.Rule(area['very small'] & dist_to_av['close'] & dist_to_beach['close'],  price['average']))
 rules.append(ctrl.Rule(area['small'] & (dist_to_av['close'] | dist_to_beach['close']),     price['average']))
 rules.append(ctrl.Rule(area['average'] & dist_to_av['average'] & dist_to_beach['average'], price['average']))
-rules.append(ctrl.Rule(area['average'] & (dist_to_av['close'] | dist_to_beach['average']), price['average']))
-rules.append(ctrl.Rule(area['average'] & (dist_to_av['average'] | dist_to_beach['close']), price['average']))
+rules.append(ctrl.Rule(area['average'] & (dist_to_av['close'] & dist_to_beach['average']), price['average']))
+rules.append(ctrl.Rule(area['average'] & (dist_to_av['average'] & dist_to_beach['close']), price['average']))
 rules.append(ctrl.Rule(area['large'] & (dist_to_av['close'] | dist_to_beach['far']),    price['average']))
 rules.append(ctrl.Rule(area['large'] & (dist_to_av['far'] | dist_to_beach['close']),    price['average']))
 rules.append(ctrl.Rule(area['large'] & (dist_to_av['far'] | dist_to_beach['far']), price['average']))
 
-rules.append(ctrl.Rule(area['average'] & dist_to_av['average'] & dist_to_beach['average'], price['high']))
-rules.append(ctrl.Rule(area['average'] & dist_to_av['average'] & dist_to_beach['close'],   price['high']))
-rules.append(ctrl.Rule(area['average'] & dist_to_av['close'] & dist_to_beach['average'],   price['high']))
+
+rules.append(ctrl.Rule(area['average'] & (dist_to_av['close'] & dist_to_beach['close']),    price['high']))
 rules.append(ctrl.Rule(area['large'] & (dist_to_av['close'] & dist_to_beach['close']),    price['high']))
 rules.append(ctrl.Rule(area['large'] & (dist_to_av['close'] & dist_to_beach['far']),    price['high']))
 rules.append(ctrl.Rule(area['large'] & (dist_to_av['far'] & dist_to_beach['close']),    price['high']))
@@ -72,14 +71,17 @@ lands = [[220, 1900, 2100, 80000],
          [375, 2000, 3000, 160000],
          [300, 300, 1500, 280000],
          [250, 1500, 650, 300000],
-         [1200, 1800, 200, 852]] #examples [area, dist_to_av, dist_to_beach, real price]
+         [1200, 1800, 200, 852000]] #examples [area, dist_to_av, dist_to_beach, real price]
 
-pricing.input['area']          = 1200
-pricing.input['dist_to_av']    = 1800
-pricing.input['dist_to_beach'] = 200
+for land in lands:
+    pricing.input['area']          = land[0]
+    pricing.input['dist_to_av']    = land[1]
+    pricing.input['dist_to_beach'] = land[2]
 
-pricing.compute()
+    pricing.compute()
 
-print(pricing.output['price'])
-price.view(sim=pricing)
-plt.show()
+    print("Predicted: ", round(pricing.output['price'])*1000, end = "  |  ")
+    print("Real price: ", land[3], end = "  |  ")
+    print("Error: ", round(pricing.output['price'])*1000-land[3])
+# price.view(sim=pricing)
+# plt.show()
