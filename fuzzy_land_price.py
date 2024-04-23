@@ -67,9 +67,16 @@ rules.append(ctrl.Rule(area['very large'] & dist_to_av['close'] & dist_to_beach[
 pricing_ctrl = ctrl.ControlSystem(rules)
 pricing = ctrl.ControlSystemSimulation(pricing_ctrl)
 
-pricing.input['area']          = 600
-pricing.input['dist_to_av']    = 500
-pricing.input['dist_to_beach'] = 100
+lands = [[220, 1900, 2100, 80000],
+         [300, 1000, 2000, 100000],
+         [375, 2000, 3000, 160000],
+         [300, 300, 1500, 280000],
+         [250, 1500, 650, 300000],
+         [1200, 1800, 200, 852]] #examples [area, dist_to_av, dist_to_beach, real price]
+
+pricing.input['area']          = 1200
+pricing.input['dist_to_av']    = 1800
+pricing.input['dist_to_beach'] = 200
 
 pricing.compute()
 
