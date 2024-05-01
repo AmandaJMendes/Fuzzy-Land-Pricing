@@ -35,7 +35,6 @@ rules = []
 rules.append(ctrl.Rule(area['small'], price['low']))
 rules.append(ctrl.Rule(area['average'] & dist_to_av['far'], price['low']))
 rules.append(ctrl.Rule(area['average'] & (dist_to_av['average'] | dist_to_beach['far']), price['low']))
-rules.append(ctrl.Rule(dist_to_av['average'] & dist_to_beach['far'], price['low']))
 
 rules.append(ctrl.Rule(area['large'], price['average'])) 
 rules.append(ctrl.Rule(area['average'] & (dist_to_av['close'] | dist_to_beach['close']), price['average']))
