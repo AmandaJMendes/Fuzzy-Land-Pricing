@@ -51,9 +51,11 @@ rules.append(ctrl.Rule(area['very large'] & dist_to_av['close'], price['very hig
 pricing_ctrl = ctrl.ControlSystem(rules)
 pricing = ctrl.ControlSystemSimulation(pricing_ctrl)
 
+# Examples from https://www.procuraseimovel.com.br/portal/imoveis/rs/rio-grande/praia/cassino/venda?tipo=terreno
+# Attributes: [area, dist_to_av, dist_to_beach, real price]
+
 condos = [[270, 2800, 4400, 135000],
           [262, 1600, 600 , 212000]]
-
 
 lands = [[220 , 2000, 1400, 95000],
          [300 , 1500, 2500, 120000],
@@ -80,26 +82,25 @@ lands = [[220 , 2000, 1400, 95000],
          [750 , 1800, 800 , 550000],
          [493 , 1000, 500 , 600000],
          [1200, 1800, 100 , 850000],
-         [750 , 300 , 850 , 1050000]] #examples [area, dist_to_av, dist_to_beach, real price]
+         [750 , 300 , 850 , 1050000]] 
 
-total_error = 0
-n = 0
+errors = []
 for land in lands:
     pricing.input['area']          = land[0]
     pricing.input['dist_to_av']    = land[1]
     pricing.input['dist_to_beach'] = land[2]
     try:
         pricing.compute()
-
+        error = ((pricing.output['price']*1000-land[3])/land[3])*100
+        errors.append(abs(error))
         print("Predicted: ", round(pricing.output['price'])*1000, end = "  |  ")
         print("Real price: ", land[3], end = "  |  ")
-        error = ((pricing.output['price']*1000-land[3])/land[3])*100
         print(f"Error: {round(error,2)}%")
-        total_error+=abs(error)
-        n+=1
     except:
-        print("Error: ", land)
-print()
-print(f"Average error: {round(total_error/n, 2)}%")
+        print("Prediction failed for ", land)
+
+print(f"\nAverage error: {round(sum(errors)/len(errors), 2)}%")
+print(f"Maximum error: {round(max(errors), 2)}%")
+print(f"Minimum error: {round(min(errors), 2)}%")
 # price.view(sim=pricing)
 # plt.show()
